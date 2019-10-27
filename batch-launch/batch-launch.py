@@ -120,8 +120,9 @@ print("Found {}: {}.".format(thingString, results))
 
 # Launch container with each of the things
 print("\nBulk launching {} containers for each of the {}.".format(wrapperName, thingString))
-launchArgs = [{rootElementName: launchArgTemplate.format(thing)} for thing in results]
-url = host + '/xapi/projects/{}/wrappers/{}/bulklaunch'.format(project, wrapperId)
+launchArgs = {rootElementName: ["\'"+launchArgTemplate.format(thing+"\'") for thing in results]}
+launchArgs['scan']="["+','.join(launchArgs['scan'])+"]"
+url = host + '/xapi/projects/{}/wrappers/{}/root/{}/bulklaunch'.format(project, wrapperId, rootElementName)
 r = s.post(url, json=launchArgs, timeout=None)
 die_if(not r.ok, message='ERROR: Batch launch failed. POST to URL {} returned status {}. Args: {}'.format(url, r.status_code, launchArgs), exit=r.text)
 
