@@ -101,20 +101,14 @@ def combineClassifications(labelP, labelH):
     elif len(labelH) > 0 and len(labelP) == 0:
         overallLabel = labelH[0]
     else:
-        if len(labelH) == 1:
-            overallLabel = labelH[0]
-        elif 'Scout' in labelH:
+        if 'Scout' in labelH:
             overallLabel='Scout'
         elif 'Localizer' in labelH:
             overallLabel='Localizer'
         elif 'Perfusion' in labelH:
             overallLabel='Perfusion'
         else:
-            for k in range(len(labelP)):
-                if labelP[k] in labelH:
-                    return labelP[k]
             overallLabel=labelH[0]
-
     return overallLabel
 
 
