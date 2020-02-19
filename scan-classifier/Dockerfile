@@ -2,12 +2,9 @@ FROM python:3.6.5-slim-stretch
 
 RUN apt-get update && \
     apt-get -y install unzip tk curl git
-
 RUN pip install --upgrade pip h5py
-RUN pip install glob3 joblib uuid h5py==2.8.0rc1 pillow xlutils med2image scipy==1.1.0 tensorflow==1.5.0 pandas requests pydicom
-
+RUN pip install glob3 joblib uuid h5py==2.8.0rc1 pillow xlutils med2image scipy==1.1.0 tensorflow==1.5.0 pandas requests pydicom pypng
 RUN git clone --branch master https://github.com/HealthplusAI/python3-gdcm.git && cd python3-gdcm && dpkg -i build_1-1_amd64.deb && apt-get install -f
-
 RUN cp /usr/local/lib/gdcm.py /usr/local/lib/python3.6/site-packages/.
 RUN cp /usr/local/lib/gdcmswig.py /usr/local/lib/python3.6/site-packages/.
 RUN cp /usr/local/lib/_gdcmswig.so /usr/local/lib/python3.6/site-packages/.
