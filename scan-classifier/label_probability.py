@@ -1,6 +1,7 @@
 import os, sys, errno
 import math
 import scipy.misc
+import png
 import tensorflow as tf
 import re
 import glob
@@ -11,10 +12,36 @@ import pydicom as dicom
 
 def predictFromPixelData(image, basename, jpgDir):
     # Save as jpg
-    jpgFile = os.path.join(jpgDir, basename + ".jpg")
+    jpgFile = os.path.join(jpgDir, basename + ".png")
     print("Converting dcm to %s" % jpgFile)
-    scipy.misc.toimage(image, high = 255, low = 0, cmin=0.0, cmax=4096).save(jpgFile)
-
+    shap = image.shape
+    image_2d = image.astype(float)
+    image_2d_scaled = np.uint8((np.maximum(image_2d,0) / image_2d.max()) * 255.0)
+    with open(jpgFile, 'wb') as png_file:
+            w = png.Writer(shap[1], shap[0], greyscale=True)
+            w.write(png_file, image_2d_scaled)
+            
+    
+#     scipy.misc.toimage(image, high = 255, low = 0, cmin=0.0, cmax=4096).save(jpgFile)
+    
+    
+#     out=image.split("/")[-1].replace(".", "_")[:-4]+'.png'
+    
+#     ds = pydicom.dcmread(image)
+#     PA=ds.pixel_array
+#     shap = PA.shape
+#     image_2d = PA.astype(float)
+#     image_2d_scaled = (np.maximum(image_2d,0) / image_2d.max()) * 255.0
+#     image_2d_scaled = np.uint8(image_2d_scaled)
+#     with open(JPG_address+'/'+out, 'wb') as png_file:
+#             w = png.Writer(shap[1], shap[0], greyscale=True)
+#             w.write(png_file, image_2d_scaled)
+    
+    
+    
+    
+    
+    
     # Unpersists graph from file
     with tf.gfile.FastGFile("./retrained_graph.pb", 'rb') as f:
         graph_def = tf.GraphDef()
@@ -148,7 +175,8 @@ def getContrastLabel(ds):
 
 def classify(dcmFile, jpgDir, scanId, nDicomFiles):
     # Read DICOM
-    ds = dicom.read_file(dcmFile)
+#     ds = dicom.read_file(dcmFile)
+    ds = dicom.dcmread(dcmFile)
 
     try:
         modality=str(ds.Modality).lower()
